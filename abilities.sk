@@ -1,0 +1,281 @@
+#===神祕加護===
+on death of player:
+    set {_w} to "Hakka_World"
+    victim has permission "ability.MysteriousBless"
+    victim's world is "%{_w}%" or "%{_w}%_nether" or "%{_w}%_the_end"
+    if {bless.level.%player%} is not set:
+        set {bless.level.%player%} to 2
+#39-helmet, 38-chestplate, 37-leg, 36-shoe
+    if {bless.armor.%player%::*} is not set:
+        set {bless.armor.%player%::39} to false
+        set {bless.armor.%player%::38} to false
+        set {bless.armor.%player%::37} to false
+        set {bless.armor.%player%::36} to false
+    loop {bless.armor.%player%::*}:
+        if loop-value is true:
+            set {_asn} to loop-index parsed as number
+            set {_aslot::%loop-index%} to slot {_asn} of victim's inventory
+    loop {bless.level.%player%} times:
+        add slot loop-number - 1 of victim's inventory to {_nd::*}
+    loop {_nd::*}:
+        if loop-value is not enchanted with curse of vanishing:
+            remove loop-value from drops
+    if {_aslot::*} is set:
+        loop {_aslot::*}:
+            if loop-value is not enchanted with curse of vanishing:
+                remove loop-value from drops
+    message "因為&3神祕的加護&r， 部分道具沒有消失" to victim
+    wait 2 ticks
+    add {_nd::*} to victim's inventory
+    if {_aslot::*} is set:
+        loop {_aslot::*}:
+            set {_asn} to loop-index parsed as number
+            set slot {_asn} of victim's inventory to loop-value
+
+#===喵喵能力卷===
+on death:
+    attacker is a player
+    victim is not player or sheep or pig or chicken or cow or parrot or horse or donkey or mule or ocelot or wolf or llama or snow man
+    chance of 1%:
+        set {_abAdd} to name tag named "&9%attacker%&r 的 &6喵喵能力卷&r" with lore "&9%attacker% &7專用的能力卷||&7可以增加一個學習能力的數量||&7右鍵使用， 當然你要當成一般的命名牌||&7喵喵神也不會反對"
+        enchant {_abAdd} with curse of vanishing
+        drop {_abAdd} at victim
+
+on rightclick with name tag:
+    item is enchanted with curse of vanishing
+    name of item contains "&6喵喵能力卷&r"
+    if name of item contains "&9%player%&r":
+        cancel the event
+        remove item from player
+        add 1 to {ability.max.%player%}
+        message "成功增加可學習能力量至： %{ability.max.%player%}%" to player
+    else:
+        message "非本人無法使用喔，抱歉" to player
+
+#on fishing:
+#    "%fishing state%" is "CAUGHT_FISH"
+#    if {fish.contest} is not set:
+#        set {fish.contest} to true
+#    if {fish.contest} is true:
+#        chance of 2%:
+#            message "atari %player%" to console
+#            set {_abAdd} to name tag named "&9%player%&r 的 &6喵喵能力卷&r" with lore "&9%player% &7專用的能力卷||&7可以增加一個學習能力的數量||&7右鍵使用， 當然你要當成一般的命名牌||&7喵喵神也不會反對"
+#            enchant {_abAdd} with curse of vanishing
+#            give player {_abAdd}
+#            broadcast "[&b一回限定&r] 恭喜 %player% 釣到 &6喵喵能力卷&r ！"
+#            broadcast "本活動結束， 敬請享受搖曳釣魚"
+#            set {fish.contest} to false
+
+#===爆裂魔法===
+on chat:
+    player has permission "ability.Explosion"
+    if message is "Explosion!":
+        set {_timepass} to difference between {explosion.casted.%player%} and now
+        if {_timepass} is less than 10 minutes:
+            message "魔力…不足呢，還需要 %difference between 10 minutes and {_timepass}% 才能充滿" to player
+            stop
+        set {explosion.casting.%player%} to true
+        create a safe explosion with force 10 at player
+
+on damage of a player:
+    if damage cause is block explosion:
+        if {explosion.casting.%victim%} is true:
+            cancel the event
+            set {explosion.casting.%victim%} to false
+            set {explosion.casted.%victim%} to now
+
+#===魚老師===
+on hunger level change:
+    player has permission "ability.FishSensei"
+    if player is holding fish in main hand:
+        cancel the event
+    else if player is holding fish in off hand:
+        cancel the event
+
+#===查洛伊藥劑===
+on offhand switch:
+    player has permission "ability.Charoi"
+    event-item is bottle of water
+    set {_timepass} to difference between {charoi.casted.%player%} and now
+    if {_timepass} is less than 10 minutes:
+        message "還需要 %difference between 10 minutes and {_timepass}% ，調製才會結束" to player
+        stop
+    message "%player% 使用了&9查洛伊藥劑&r，蓄勢待發！" to all players
+    if player's food level <= 7:
+        add 3 to player's food level
+    else:
+        set player's food level to 10
+    apply regeneration 2 to player for 12.5 seconds
+    apply swiftness 3 to player for 12.5 seconds
+    apply resistance 2 to player for 12.5 seconds
+    apply night vision to player for 12.5 seconds
+    set {charoi.casted.%player%} to now
+    set {charoi.casting.%player%} to true
+    wait 12.5 seconds
+    set {charoi.casting.%player%} to false
+
+on damage:
+    if {charoi.casting.%attacker%} is true:
+        cancel the event
+
+#===一定到===
+on rightclick with eye of ender:
+    player has permission "ability.WillBeThere"
+    player is sneaking
+    cancel the event
+    set {_timepass} to difference between {willbethere.casted.%player%} and now
+    if {_timepass} is less than 5 minutes:
+        message "傳送能量還需要 %difference between 5 minutes and {_timepass}% 才能使用" to player
+        stop
+    set {_onlinepl::*} to all players
+    remove player from {_onlinepl::*}
+    set {_target} to random player of {_onlinepl::*}
+    if {_target} is not set:
+        message "可惜了，萬人響應，一人到場" to player
+        stop
+    message "[&a%player%&r] 一定到！一定到！" to all players
+    teleport player to {_target}
+    message "%player% 一定到 %{_target}% 那裡" to console
+    set {willbethere.casted.%player%} to now
+
+#===吾主在此===
+on place of any banner block:
+    player has permission "ability.LuminositeEternelle"
+    player is sneaking
+    set {_timepass} to difference between {kokoniiru.casted.%player%} and now
+    if {_timepass} is less than 10 minutes:
+        message "還需要 %difference between 10 minutes and {_timepass}% ，NP才會充滿" to player
+        stop
+    apply slowness 7 to player for 30 seconds
+    loop all players in radius 10 of event-location:
+        apply health boost 1 to loop-value for 30 seconds
+        heal loop-value by 2 hearts
+        apply resistance 1 to loop-value for 30 seconds
+        apply regeneration 1 to loop-value for 10 seconds
+        apply absorption 2 to loop-value for 10 seconds
+        message "&bリュミノジテ・エテルネッル" to loop-value
+        message "&b 「我が神はここにありて」 " to loop-value
+    set {kokoniiru.casted.%player%} to now
+
+#===盾牌衝鋒===
+on sprint toggle:
+    if player don't have permission "ability.ShieldAssault.Basic":
+        if player don't have permission "ability.ShieldAssault.Enhanced":
+            stop
+    if player is sprinting:
+        clear {-sprint.start.%player%}
+        stop
+    set {-sprint.start.%player%} to location of player
+
+on damage:
+    if attacker don't have permission "ability.ShieldAssault.Basic":
+        if attacker don't have permission "ability.ShieldAssault.Enhanced":
+            stop
+    if attacker have permission "ability.ShieldAssault.Enhanced":
+        set {_enhance} to true
+    attacker is sprinting
+    attacker is holding shield
+    if {-sprint.start.%attacker%} is not set:
+        stop
+    set {_v} to vector between {-sprint.start.%attacker%} and location of attacker
+    message "盾牌衝鋒！" to attacker
+    if {_enhance} is not set:
+        set {_vl} to floor(sqrt(squared length of {_v})/2)
+        if {_vl} > 2:
+            set {_vl} to 2
+        #push victim facing of attacker at speed 9
+        push victim {_v}
+    else:
+        set {_vl} to floor(sqrt(squared length of {_v})/1.5)
+        if {_vl} > 4.5:
+            set {_vl} to 4.5
+        loop all entities in radius 3 of attacker:
+            loop-value is not attacker
+            set {_vc} to vector between location of attacker and location of loop-value
+            angle between {_vc} and {_v} <= 90
+            push loop-value {_v}
+    add {_vl} to damage
+    message "&e額外傷害： ❤×%{_vl}%&r" to attacker
+
+#===客家人===
+function ramdomMob() :: string:
+    set {_mobs::*} to "bat", "blaze", "cave_spider", "chicken", "cow", "creeper", "ender_dragon", "enderman", "ghast", "giant", "horse", "donkey", "mule", "skeleton_horse", "undead_horse", "iron_golem", "magma_cube", "mushroom_cow", "ocelot", "pig", "pig_zombie", "sheep", "silverfish", "skeleton", "wither_skeleton", "slime", "snowman", "spider", "squid", "villager", "witch", "wither", "wolf", "zombie" and "zombie_villager"
+    return random string of {_mobs::*}
+
+on chat:
+    player has permission "ability.Hakka"
+    if message is "Hakka!":
+        set {_timepass} to difference between {hakka.casted.%player%} and now
+        if {_timepass} is less than 10 minutes:
+            message "還需要 %difference between 10 minutes and {_timepass}% ，才能變身" to player
+            stop
+        set {_mob} to ramdomMob()
+        execute console command "/dplayer %player% %{_mob}%"
+        message "你已變身成 &b%{_mob}%&r" to player
+        set {hakka.casted.%player%} to now
+        wait 3 minutes
+        execute console command "/undplayer %player%"
+        message "變身結束"
+
+#===雞雞攻擊===
+on damage:
+    attacker has permission "ability.ChickenAttack"
+    if damage was caused by projectile:
+        projectile is egg
+        message "&6Chicken Attack!&r" to attacker
+        add 2.5 to damage
+
+#===雨男===
+on join:
+    player has permission "ability.Blackmore"
+    if is sunny:
+        if player's gamemode is survival or adventure:
+            set player's fly mode to false
+    else:
+        set player's fly mode to true
+
+on inventory close:
+    if player has permission "ability.Blackmore":
+        if is sunny in player's world:
+            stop
+        set player's fly mode to true
+    else:
+        if player's gamemode is survival or adventure:
+            set player's fly mode to false
+
+on player world change: 
+    player has permission "ability.Blackmore"
+    if is sunny in world:
+        if player's gamemode is survival or adventure:
+            set player's fly mode to false
+    else:
+        set player's fly mode to true
+
+on weather change:
+    if is rainy or thunderstorm:
+        message "change to rain" to console
+        loop all players:
+            loop-value has permission "ability.Blackmore"
+            is rainy or thunderstorm in loop-value's world
+            if loop-value's fly mode is false:
+                set loop-value's fly mode to true
+    else:
+        message "change to sun" to console
+        loop all players:
+            is sunny in loop-value's world
+            if loop-value's gamemode is survival or adventure:
+                set loop-value's fly mode to false
+
+#=== ===
+on rightclick on entity:
+    player has permission "ability.Riding"
+    player is holding a saddle
+    clicked entity is a player
+    make player ride the clicked entity
+    apply swiftness 3 to clicked entity for 999 days
+
+on rightclick with a saddle:
+    player has permission "ability.Riding"
+    player is riding a player
+    remove swiftness from player's vehicle
+    make player leave the vehicle

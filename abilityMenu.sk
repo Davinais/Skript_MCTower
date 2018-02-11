@@ -1,0 +1,202 @@
+#Requires Skellett, SkQuery
+Options:
+    abNPC: &6喵喵神
+
+function abNPCsay(t: text, p: player):
+    message "&8［{@abNPC}&8］&r %{_t}%" to {_p}
+
+function abFirst(p: player):
+    abNPCsay("啊，這不是 %{_p}% 嗎？", {_p})
+    wait 1 second
+    abNPCsay("怎麼了，到客家世界之後覺得難以生存嗎？", {_p})
+    wait 1 second
+    abNPCsay("看在肥人的份上，就給你一個特殊能力吧", {_p})
+    wait 0.5 second
+    setAbList("&0學習能力", {_p})
+
+function abMenu(p: player):
+    abNPCsay("啊，這不是 %{_p}% 嗎？", {_p})
+    wait 0.5 second
+    open "CHEST" with 1 rows named "&0能力選單" to {_p}
+    invalidSlots((1, 3, 5 and 7), {_p})
+    set slot 0 of {_p}'s current inventory to enchantment table named "&b學習新能力"
+    set slot 2 of {_p}'s current inventory to sign named "&e更換能力"
+    set slot 4 of {_p}'s current inventory to book named "&a查看擁有能力"
+    set slot 6 of {_p}'s current inventory to end portal frame named "&6神祕加護升級"
+    set slot 8 of {_p}'s current inventory to bookshelf named "&3檢視能力說明"
+
+function abLearn(p: player):
+    if {ability.learned.%{_p}%} >= {ability.max.%{_p}%}:
+        abNPCsay("你現在能學習的能力最大數量只有： %{ability.max.%{_p}%}% 而已", {_p})
+        wait 1 second
+        abNPCsay("很可惜，已經到最大值囉", {_p})
+        stop
+    abNPCsay("啊啊！可以學新能力啦？", {_p})
+    wait 0.5 second
+    abNPCsay("看來你很努力呢，相信你一定過得很充實！", {_p})
+    wait 0.5 second
+    setAbList("&0學習能力", {_p})
+
+function abChange(p: player):
+    abNPCsay("想更換能力？", {_p})
+    wait 1 second
+    abNPCsay("看在肥人的面子上，就給你一次機會吧", {_p})
+    wait 0.5 second
+    viewOwnAb("&0選擇欲取代的能力", {_p}, false)
+
+function abCheck(p: player):
+    abNPCsay("哎呀，忘記自己有什麼能力了？", {_p})
+    wait 1 second
+    abNPCsay("真是…怠惰呢", {_p})
+    wait 0.5 second
+    viewOwnAb("&0查看擁有能力", {_p}, true)
+    message "可學習最大數： %{ability.max.%{_p}%}%" to {_p}
+
+function abView(p: player):
+    abNPCsay("忘記能力如何發動跟效果了？", {_p})
+    wait 1 second
+    abNPCsay("身為肥人，這也太失學了吧", {_p})
+    wait 1 second
+    abNPCsay("我再好好說一次啊", {_p})
+    wait 0.5 second
+    setAbList("&0檢視能力說明", {_p})
+
+function blessMenu(p: player):
+    abNPCsay("想增加神祕加護等級？", {_p})
+    wait 1 second
+    abNPCsay("獻上一點貢品的話，也不是不行喔", {_p})
+    wait 0.5 second
+    if {bless.level.%{_p}%} is not set:
+        set {bless.level.%{_p}%} to 2
+#39-helmet, 38-chestplate, 37-leg, 36-shoe
+    if {bless.armor.%{_p}%::*} is not set:
+        set {bless.armor.%{_p}%::39} to false
+        set {bless.armor.%{_p}%::38} to false
+        set {bless.armor.%{_p}%::37} to false
+        set {bless.armor.%{_p}%::36} to false
+    set {-bless.leveladd.%{_p}%} to 0
+    loop {bless.armor.%{_p}%::*}:
+        if loop-value is false:
+            set {_at::%loop-index%} to "無"
+        else:
+            set {_at::%loop-index%} to "有"
+            add 5 to {-bless.leveladd.%{_p}%}
+    open "CHEST" with 1 row named "&0神祕加護升級" to {_p}
+    invalidSlots((0, 2, 4, 6 and 8), {_p})
+    set slot 1 of {_p}'s current inventory to beacon named "&b升級工具欄加護" with lore "&7需求等級： %20+({bless.level.%{_p}%}-2)*2%"
+    set slot 3 of {_p}'s current inventory to iron chestplate named "&b升級裝備加護" with lore "&7需求等級： %{-bless.leveladd.%{_p}%}+20%"
+    set slot 5 of {_p}'s current inventory to end portal frame named "&3目前加護格數" with lore "&f- 工具欄加護： %{bless.level.%{_p}%}%格||&f- 頭： %{_at::39}%||&f- 胸： %{_at::38}%||&f- 腿： %{_at::37}%||&f- 腳： %{_at::36}%"
+    set slot 7 of {_p}'s current inventory to barrier named "&c關閉"
+
+function blessLevelUp(p: player):
+    close {_p}'s inventory
+    set {_require} to 20 + ({bless.level.%{_p}%}-2)*2
+    if {_p}'s level < {_require}:
+        abNPCsay("抱歉，你的等級不夠喔！", {_p})
+        stop
+    if {bless.level.%{_p}%} >= 8:
+        abNPCsay("加護已經升級滿啦， 加油吧！", {_p})
+        stop
+    reduce {_p}'s level by {_require}
+    add 1 to {bless.level.%{_p}%}
+    abNPCsay("升級成功！目前加護格數為： %{bless.level.%{_p}%}%", {_p})
+
+function blessArmorMenu(p: player):
+    set {_require} to 20 + {-bless.leveladd.%{_p}%}
+    if {_p}'s level < {_require}:
+        abNPCsay("抱歉，你的等級不夠喔！", {_p})
+        close {_p}'s inventory
+        stop
+    open "CHEST" with 1 row named "&0裝備加護升級" to {_p}
+    invalidSlots((0, 1, 2, 3, 4, 5, 6, 7 and 8), {_p})
+    set {_canLearn} to false
+    if {bless.armor.%{_p}%::39} is false:
+        set slot 2 of {_p}'s current inventory to iron helmet named "［加護］ 頭" with lore "head"
+        set {_canLearn} to true
+    if {bless.armor.%{_p}%::38} is false:
+        set slot 3 of {_p}'s current inventory to iron chestplate named "［加護］ 胸" with lore "chest"
+        set {_canLearn} to true
+    if {bless.armor.%{_p}%::37} is false:
+        set slot 5 of {_p}'s current inventory to iron legs named "［加護］ 腿" with lore "legs"
+        set {_canLearn} to true
+    if {bless.armor.%{_p}%::36} is false:
+        set slot 6 of {_p}'s current inventory to iron boots named "［加護］ 腳" with lore "feet"
+        set {_canLearn} to true
+    if {_canLearn} is false:
+        abNPCsay("裝備加護都已經升級滿啦， 不用再擔心了！", {_p})
+        close {_p}'s inventory
+        stop
+
+on right click on entity:
+    if name of clicked entity contains "{@abNPC}":
+        if {ability.max.%player%} is not set:
+            set {ability.max.%player%} to 1
+            set {ability.learned.%player%} to 0
+            abFirst(player)
+        else if {ability.learned.%player%} is 0:
+            abFirst(player)
+        else:
+            abMenu(player)
+
+on inventory click:
+    if name of player's current inventory is "&0學習能力":
+        cancel the event
+        if name of item contains "&7［能力］":
+            execute console command "/pex user %player% add ability.%line 1 of lore of item%"
+            add 1 to {ability.learned.%player%}
+            message "成功學習 %name of item%" to player
+            close player's inventory
+            abNPCsay("不要太倚靠能力，好好的在客家世界生存吧！", player)
+    else if name of player's current inventory is "&0能力選單":
+        cancel the event
+        if name of item contains "&3檢視能力說明":
+            close player's inventory
+            abView(player)
+        else if name of item contains "&a查看擁有能力":
+            close player's inventory
+            abCheck(player)
+        else if name of item contains "&e更換能力":
+            close player's inventory
+            abChange(player)
+        else if name of item contains "&b學習新能力":
+            close player's inventory
+            abLearn(player)
+        else if name of item contains "&6神祕加護升級":
+            close player's inventory
+            blessMenu(player)
+    else if name of player's current inventory is "&0檢視能力說明" or "&0查看擁有能力":
+        cancel the event
+    else if name of player's current inventory is "&0選擇欲取代的能力":
+        cancel the event
+        if name of item contains "&7［能力］":
+            execute console command "/pex user %player% remove ability.%line 1 of lore of item%"
+            reduce {ability.learned.%player%} by 1
+            message "成功移除 %name of item%" to player
+            setAbList("&0更換能力", player)
+    else if name of player's current inventory is "&0更換能力":
+        cancel the event
+        if name of item contains "&7［能力］":
+            execute console command "/pex user %player% add ability.%line 1 of lore of item%"
+            add 1 to {ability.learned.%player%}
+            message "成功更換成 %name of item%"
+            close player's inventory
+            abNPCsay("可別再出爾反爾啦", player)
+    else if name of player's current inventory is "&0神祕加護升級":
+        cancel the event
+        if name of item contains "&b升級工具欄加護":
+            blessLevelUp(player)
+        else if name of item contains "&b升級裝備加護":
+            blessArmorMenu(player)
+        else if name of item contains "&c關閉":
+            close player's inventory
+    else if name of player's current inventory is "&0裝備加護升級":
+        cancel the event
+        close player's inventory
+        set {_asn::head} to 39
+        set {_asn::chest} to 38
+        set {_asn::legs} to 37
+        set {_asn::feet} to 36
+        set {bless.armor.%player%::%{_asn::%line 1 of lore of item%}%} to true
+        set {_rq} to 20 + {-bless.leveladd.%{_p}%}
+        reduce player's level by {_rq}
+        message "成功升級 %name of item%！" to player

@@ -1,0 +1,22 @@
+function invalidSlot(n: number, p: player):
+    set slot {_n} of {_p}'s current inventory to black stained Glass Pane named "&0"
+
+function invalidSlots(is: numbers, p: player):
+    loop {_is::*}:
+        set slot loop-value of {_p}'s current inventory to black stained Glass Pane named "&0"
+
+function getTimeText(s: number) :: text:
+    set {_m} to floor({_s}/60)
+    reduce {_s} by {_m}*60
+    if {_m} < 10:
+        set {_mt} to "0%{_m}%"
+    else:
+        set {_mt} to "%{_m}%"
+    if {_s} < 10:
+        set {_st} to "0%{_s}%"
+    else:
+        set {_st} to "%{_s}%"
+    return "%{_mt}%:%{_st}%"
+
+function cmd(c: text):
+    execute console command {_c}

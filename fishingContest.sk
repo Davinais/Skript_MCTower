@@ -1,0 +1,297 @@
+Options:
+    score: fishScore
+    applyCount: 30
+    rod: &b奈音大賽用釣竿
+    jammed: &f［&b釣魚妨礙&r］
+    InitialScore: 0
+    fishScore: 1
+    salmonScore: 2
+    pufferfishScore: 4
+    clownfishScore: 12
+    lilypadScore: 3
+    saddleScore: 3
+    nameTagScore: 3
+    enchantedScore: 5
+    otherScore: -1
+
+on load:
+    add glow fire charge named "{@jammed} &6閃瞎我狗眼" with lore "&f大賽專用妨礙道具||&f給予其他參賽者30秒失明+夜視效果||&f大賽後收回" to {-jams::*}
+    add glow feather named "{@jammed} &b飛行荷蘭人" with lore "&f大賽專用妨礙道具||&f使其他參賽者往上飛32格||&f但不受墜落傷害||&f大賽後收回" to {-jams::*}
+    add glow paper named "{@jammed} &a均分卡" with lore "&f大賽專用妨礙道具||&f與除去你之外的第一名均分分數||&f大賽後收回" to {-jams::*}
+
+function changeFishScore(ch: number, p: player):
+    add {_ch} to {{@score}.%{_p}%}
+    if {_ch} > 0:
+        cmd("/scoreboard players add %{_p}%_ {@score} %{_ch}%")
+    else:
+        set {_ch} to {_ch}*-1
+        cmd("/scoreboard players remove %{_p}%_ {@score} %{_ch}%")
+
+function setFishScore(n: number, p: player):
+    set {{@score}.%{_p}%} to {_n}
+    cmd("/scoreboard players set %{_p}%_ {@score} %{_n}%")
+
+function startFishingContest(time: number):
+    set {_timebar} to new bossbar
+    set {_timebar}'s visibility to true
+    set {_timebar}'s color to BLUE
+    set {_timebar}'s style to SEGMENTED_10
+    loop {fisher::*}:
+        add loop-value to bar {_timebar}
+    set {-fishingContest.stage} to 1
+    show bar {_timebar}
+    set {-fishingContest.time} to {_time}
+    while {-fishingContest.time} > 0:
+        set {_timebar}'s progress to {-fishingContest.time}/{_time}
+        set {_timebar}'s bar title to "&b剩餘時間： %getTimeText({-fishingContest.time})%&r"
+        reduce {-fishingContest.time} by 1
+        wait 1 second
+    set {-fishingContest.stage} to 3
+    hide bar {_timebar}
+    set {_timebar}'s visibility to false
+    remove all players in bar {_timebar}
+    delete {_timebar}
+    endFishingContest()
+
+function endFishingContest():
+    clear {-fishingContest.time}
+    clear {-fishingContest.stage}
+    loop players:
+        loop all items in loop-player's inventory:
+            if name of loop-item contain "{@rod}":
+                remove loop-item from loop-player
+            if name of loop-item contain "{@jammed}":
+                remove loop-item from loop-player
+    add {fisher::1} to {_win::*}
+    loop {fisher::*}:
+        if {{@score}.%loop-value%} > {{@score}.%{_win::1}%}:
+            clear {_win::*}
+            set {_win::1} to loop-value
+        else if {{@score}.%loop-value%} is {{@score}.%{_win::1}%}:
+            if loop-value is not {_win::1}:
+                add loop-value to {_win::*}
+    if size of {_win::*} is 1:
+        broadcast "［&b釣魚大賽&r］ 恭喜勝利者為： %{_win::1}%"
+    else:
+        loop {_win::*}:
+            if {_wt} is not set:
+                set {_wt} to "%loop-value%"
+            else:
+                set {_wt} to "%{_wt}%, %loop-value%"
+        broadcast "［&b釣魚大賽&r］ 恭喜以下平手勝利者： %{_wt}%"
+    wait 6 second
+    clear {fisher::*}
+    cmd("/scoreboard objectives remove {@score}")
+
+command fishingContest [<text>] [<number>]:
+    aliases: fc
+    trigger:
+        if arg 1 is "start":
+            player has permission "fishingContest.admin"
+            if arg 2 is not set:
+                set {_time} to 900
+            else:
+                set {_time} to arg 2 *60
+            if {-fishingContest.stage} is not set:
+                set {_sdn} to "&b&l釣魚大賽"
+                cmd("/scoreboard objectives add {@score} dummy %{_sdn}%")
+                cmd("/scoreboard objectives setdisplay sidebar {@score}")
+            else:
+                send "請勿重複開始比賽"
+                stop
+            clear {fisher::*}
+            set {_timebar} to new bossbar
+            set {_timebar}'s visibility to true
+            set {_timebar}'s color to RED
+            set {_timebar}'s style to SOLID
+            set {_count} to {@applyCount}
+            loop all players:
+                add loop-value to bar {_timebar}
+            set {-fishingContest.stage} to 0
+            show bar {_timebar}
+            broadcast "［&b釣魚大賽&r］ 即將展開， 請有興趣的朋友在報名時間內"
+            broadcast "［&b釣魚大賽&r］ 輸入 &b/fc apply&r 進行報名！"
+            broadcast "［&b釣魚大賽&r］ 大賽中必須使用專用釣竿才計分"
+            broadcast "［&b釣魚大賽&r］ 計分標準請輸入 &a/fc info&r 查詢"
+            while {_count} > 0:
+                set {_timebar}'s progress to {_count}/{@applyCount}
+                set {_timebar}'s bar title to "&c報名時間： %getTimeText({_count})%&r"
+                reduce {_count} by 1
+                wait 1 second
+            hide bar {_timebar}
+            set {_timebar}'s visibility to false
+            remove all players in bar {_timebar}
+            delete {_timebar}
+            if {-fishingContest.stage} is 0:
+                startFishingContest({_time})
+        else if arg 1 is "apply":
+            if {-fishingContest.stage} is 0:
+                if "%{fisher::*}%" contain "%player%":
+                    send "［&b釣魚大賽&r］ 請勿重複報名！"
+                else:
+                    set {{@score}.%player%} to {@InitialScore}
+                    add player to {fisher::*}
+                    set {_regRod} to fishing rod named "{@rod} - 普通" with lore "&f大賽專用釣竿||&f比賽後收回"
+                    set {_speRod} to fishing rod:62 named "{@rod} &6- 特殊" with lore "&f大賽專用釣竿||&f只能用3次||&f可以非常快速地釣到魚||&f並且得分3倍||&f比賽後收回"
+                    enchant {_regRod} with Mending
+                    enchant {_regRod} with Unbreaking 1
+                    enchant {_regRod} with Luck of the Sea 2
+                    enchant {_regRod} with Lure 2
+                    enchant {_speRod} with Luck of the Sea 3
+                    enchant {_speRod} with Lure 5
+                    cmd("/scoreboard players set %player%_ {@score} %{{@score}.%player%}%")
+                    send "［&b釣魚大賽&r］ 報名成功！"
+                    give {_regRod} to player
+                    give {_speRod} to player
+            else:
+                send "［&b釣魚大賽&r］ 現在不是報名時間喔！"
+        else if arg 1 is "info":
+            send "&b==========釣魚大賽=========="
+            send "&b計分標準："
+            send "&a- 普通魚------[{@fishScore}分]"
+            send "&b- 鮭魚--------[{@salmonScore}分]"
+            send "&b- 河豚--------[{@pufferfishScore}分]"
+            send "&6- 小丑魚-----[{@clownfishScore}分]"
+            send "&e- 荷葉--------[{@lilypadScore}分]"
+            send "&e- 鞍----------[{@saddleScore}分]"
+            send "&e- 命名牌------[{@nameTagScore}分]"
+            send "&5- 附魔道具----[{@enchantedScore}分]"
+            send "&9- 其他垃圾---[{@otherScore}分]"
+        else if arg 1 is "stop":
+            player has permission "fishingContest.admin"
+            if {-fishingContest.stage} is set:
+                if {-fishingContest.stage} is 0:
+                    broadcast "［&b釣魚大賽&r］ 由於管理員以指令停止， 比賽停辦"
+                    endFishingContest()
+                else if {-fishingContest.stage} is 1:
+                    set {-fishingContest.time} to 3
+                    broadcast "［&b釣魚大賽&r］ 由於管理員以指令停止， 比賽將於三秒內結束"
+            else:
+                send "無進行中的比賽喔！"
+        else if arg 1 is "reset":
+            player has permission "fishingContest.admin"
+            set {-fishingContest.time} to 0
+            #clear {-fishingContest.stage}
+            endFishingContest()
+        else if arg 1 is "test":
+            player has permission "fishingContest.admin"
+            give player {-jams::*}
+
+#===處理釣竿問題，避免私藏===
+#目前尚缺死亡時釣竿被鐵砧吸走的情形
+on inventory click:
+    name of item contains "{@rod}" or "{@jammed}"
+    if inventory type of player's current inventory is not "CRAFTING":
+        cancel the event
+
+on drop:
+    name of item contains "{@rod}" or "{@jammed}"
+    cancel the event
+
+#===妨礙道具===
+on rightclick with fire charge:
+    name of item is "{@jammed} &6閃瞎我狗眼"
+    cancel the event
+    remove item from player
+    message "［%player%］ 閃瞎你們狗眼啦！" to {fisher::*}
+    loop {fisher::*}:
+        if loop-value is not player:
+            apply blindness to loop-value for 20 second
+            apply night vision to loop-value for 20 second
+
+on right click with feather:
+    name of item is "{@jammed} &b飛行荷蘭人"
+    cancel the event
+    remove item from player
+    message "［%player%］ See you fly, I am proud to see you fly up high" to {fisher::*}
+    loop {fisher::*}:
+        if loop-value is not player:
+            push loop-value upward at speed 36
+            set {-featherfly.%loop-value%} to true
+
+on right click with paper:
+    name of item is "{@jammed} &a均分卡"
+    cancel the event
+    remove item from player
+    if size of {fisher::*} is 1:
+        stop
+    set {_targets::*} to {fisher::*}
+    remove player from {_targets::*}
+    loop {_targets::*}:
+        if {_win} is not set:
+            set {_win} to loop-value
+        else if {{@score}.%loop-value%} > {{@score}.%{_win}%}:
+            set {_win} to loop-value
+    set {_average} to floor(({{@score}.%{_win}%}+{{@score}.%player%})/2)
+    setFishScore({_average}, player)
+    setFishScore({_average}, {_win})
+    message "［%player%］ 均值是統計中的一個重要概念" to {fisher::*}
+
+on damage of a player:
+    damage was caused by fall
+    if {-featherfly.%victim%} is true:
+        clear {-featherfly.%victim%}
+        cancel the event
+
+#===分數處理===
+on fishing:
+    "%fishing state%" is "CAUGHT_FISH"
+    "%{fisher::*}%" contain "%player%"
+    name of player's tool contain "{@rod}"
+    if {-fishingContest.stage} is 1:
+        chance of 5%:
+            set {_jam} to random item of {-jams::*}
+            set item within entity caught item to {_jam}
+            changeFishScore(3, player)
+            message "［&b釣魚大賽&r］ 你獲得了 %name of {_jam}% &r［&e+3&r］" to player
+            stop
+        set {_temp::*} to item within entity caught item
+        set {_caught} to {_temp::1}
+        #message "%player% - %{_caught}%" to console
+        if {_caught} is raw fish:
+            set {_sc} to {@fishScore}
+            set {_fi} to "&a普通魚&r， ［&a"
+        else if {_caught} is raw salmon:
+            set {_sc} to {@salmonScore}
+            set {_fi} to "&b鮭魚&r， ［&b"
+        else if {_caught} is raw pufferfish:
+            set {_sc} to {@pufferfishScore}
+            set {_fi} to "&b河豚&r， ［&b"
+        else if {_caught} is raw clownfish:
+            set {_sc} to {@clownfishScore}
+            set {_fi} to "&6小丑魚&r， ［&6"
+        else if {_caught} is lily pad:
+            set {_sc} to {@lilypadScore}
+            set {_fi} to "&e荷葉&r， ［&e"
+        else if {_caught} is saddle:
+            set {_sc} to {@saddleScore}
+            set {_fi} to "&e鞍&r， ［&e"
+        else if {_caught} is name tag:
+            set {_sc} to {@nameTagScore}
+            set {_fi} to "&e命名牌&r， ［&e"
+        else if {_caught} is enchanted book:
+            set {_sc} to {@enchantedScore}
+            set {_fi} to "&5附魔書&r， ［&5"
+        else if {_caught} is bow:
+            set {_sc} to {@enchantedScore}
+            set {_fi} to "&5附魔弓&r， ［&5"
+        else if {_caught} is fishing rod:
+            if {_caught} is enchanted:
+                set {_sc} to {@enchantedScore}
+                set {_fi} to "&5附魔釣竿&r， ［&5"
+            else:
+                set {_sc} to {@otherScore}
+                set {_fi} to "&9垃圾釣竿&r， ［&9"
+        else:
+            set {_sc} to {@otherScore}
+            set {_fi} to "&9垃圾&r， ［&9"
+        if {_sc} > 0:
+            set {_fi} to "%{_fi}%+%{_sc}%&r］"
+        else:
+            set {_fi} to "%{_fi}%%{_sc}%&r］"
+        if name of player's tool contain "特殊":
+            set {_fi} to "%{_fi}% &6- 因特殊釣竿， 得分3倍"
+            changeFishScore({_sc}*3, player)
+        else:
+            changeFishScore({_sc}, player)
+        message "%player% 釣到 %{_fi}%" to {fisher::*}
