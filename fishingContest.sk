@@ -15,10 +15,18 @@ Options:
     otherScore: -1
 
 on load:
-    add glow fire charge named "{@jammed} &6閃瞎我狗眼" with lore "&f大賽專用妨礙道具||&f給予其他參賽者30秒失明+夜視效果||&f大賽後收回" to {-jams::*}
-    add glow feather named "{@jammed} &b飛行荷蘭人" with lore "&f大賽專用妨礙道具||&f使其他參賽者往上飛32格||&f但不受墜落傷害||&f大賽後收回" to {-jams::*}
-    add glow paper named "{@jammed} &a均分卡" with lore "&f大賽專用妨礙道具||&f與除去你之外的第一名均分分數||&f大賽後收回" to {-jams::*}
-
+    set {-regRod} to unbreakable fishing rod named "{@rod} - 普通" with lore "&f大賽專用釣竿||&f比賽後收回"
+    set {-speRod} to fishing rod:62 named "{@rod} &6- 特殊" with lore "&f大賽專用釣竿||&f只能用3次||&f可以非常快速地釣到魚||&f並且得分3倍||&f比賽後收回"
+    enchant {-regRod} with Luck of the Sea 2
+    enchant {-regRod} with Lure 2
+    enchant {-speRod} with Luck of the Sea 3
+    enchant {-speRod} with Lure 5
+    clear {-speItem::*}
+    add glow fire charge named "{@jammed} &6閃瞎我狗眼" with lore "&f大賽專用妨礙道具||&f給予其他參賽者30秒失明+夜視效果||&f大賽後收回" to {-speItem::*}
+    add glow feather named "{@jammed} &b飛行荷蘭人" with lore "&f大賽專用妨礙道具||&f使其他參賽者往上飛32格||&f但不受墜落傷害||&f大賽後收回" to {-speItem::*}
+    add glow paper named "{@jammed} &a均分卡" with lore "&f大賽專用妨礙道具||&f與除去你之外的第一名均分分數||&f大賽後收回" to {-speItem::*}
+    add {-speRod} to {-speItem::*}
+    
 function changeFishScore(ch: number, p: player):
     add {_ch} to {{@score}.%{_p}%}
     if {_ch} > 0:
@@ -131,18 +139,10 @@ command fishingContest [<text>] [<number>]:
                 else:
                     set {{@score}.%player%} to {@InitialScore}
                     add player to {fisher::*}
-                    set {_regRod} to fishing rod named "{@rod} - 普通" with lore "&f大賽專用釣竿||&f比賽後收回"
-                    set {_speRod} to fishing rod:62 named "{@rod} &6- 特殊" with lore "&f大賽專用釣竿||&f只能用3次||&f可以非常快速地釣到魚||&f並且得分3倍||&f比賽後收回"
-                    enchant {_regRod} with Mending
-                    enchant {_regRod} with Unbreaking 1
-                    enchant {_regRod} with Luck of the Sea 2
-                    enchant {_regRod} with Lure 2
-                    enchant {_speRod} with Luck of the Sea 3
-                    enchant {_speRod} with Lure 5
                     cmd("/scoreboard players set %player%_ {@score} %{{@score}.%player%}%")
                     send "［&b釣魚大賽&r］ 報名成功！"
-                    give {_regRod} to player
-                    give {_speRod} to player
+                    give {-regRod} to player
+                    give {-speRod} to player
             else:
                 send "［&b釣魚大賽&r］ 現在不是報名時間喔！"
         else if arg 1 is "info":
@@ -175,7 +175,9 @@ command fishingContest [<text>] [<number>]:
             endFishingContest()
         else if arg 1 is "test":
             player has permission "fishingContest.admin"
-            give player {-jams::*}
+            give player {-speItem::*}
+            give {-regRod} to player
+            give {-speRod} to player
 
 #===處理釣竿問題，避免私藏===
 #目前尚缺死亡時釣竿被鐵砧吸走的情形
@@ -192,7 +194,7 @@ on drop:
 on rightclick with fire charge:
     name of item is "{@jammed} &6閃瞎我狗眼"
     cancel the event
-    remove item from player
+    remove 1 of item from player
     message "［%player%］ 閃瞎你們狗眼啦！" to {fisher::*}
     loop {fisher::*}:
         if loop-value is not player:
@@ -202,7 +204,7 @@ on rightclick with fire charge:
 on right click with feather:
     name of item is "{@jammed} &b飛行荷蘭人"
     cancel the event
-    remove item from player
+    remove 1 of item from player
     message "［%player%］ See you fly, I am proud to see you fly up high" to {fisher::*}
     loop {fisher::*}:
         if loop-value is not player:
@@ -212,7 +214,7 @@ on right click with feather:
 on right click with paper:
     name of item is "{@jammed} &a均分卡"
     cancel the event
-    remove item from player
+    remove 1 of item from player
     if size of {fisher::*} is 1:
         stop
     set {_targets::*} to {fisher::*}
@@ -240,7 +242,7 @@ on fishing:
     name of player's tool contain "{@rod}"
     if {-fishingContest.stage} is 1:
         chance of 5%:
-            set {_jam} to random item of {-jams::*}
+            set {_jam} to random item of {-speItem::*}
             set item within entity caught item to {_jam}
             changeFishScore(3, player)
             message "［&b釣魚大賽&r］ 你獲得了 %name of {_jam}% &r［&e+3&r］" to player
@@ -289,7 +291,10 @@ on fishing:
             set {_fi} to "%{_fi}%+%{_sc}%&r］"
         else:
             set {_fi} to "%{_fi}%%{_sc}%&r］"
-        if name of player's tool contain "特殊":
+        if {-fishingContest.time} is 1:
+            set {_fi} to "%{_fi}% &b- 壓線獎勵 +25分"
+            changeFishScore({_sc}+25, player)
+        else if name of player's tool contain "特殊":
             set {_fi} to "%{_fi}% &6- 因特殊釣竿， 得分3倍"
             changeFishScore({_sc}*3, player)
         else:
