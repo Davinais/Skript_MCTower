@@ -1,36 +1,33 @@
 function setAbility(p: player, sn: number, ab: text, b: boolean = false):
-    loop {ab.%{_ab}%.effects::*}:
+    loop {-ab.%{_ab}%.effects::*}:
         if {_ef} is not set:
             set {_ef} to "&7效果： %loop-value%"
         else:
             set {_ef} to "%{_ef}%||&7      %loop-value%"
     if {_b} is false:
-        set {_name} to "&7［能力］ %{ab.%{_ab}%::name}%"
+        set {_name} to "&7［能力］ %{-ab.%{_ab}%::name}%"
     else:
-        set {_name} to "&7［基礎］ %{ab.%{_ab}%::name}%"
-    set {_cast} to "&7發動： %{ab.%{_ab}%::cast}%"
-    set {_cd} to "&7冷卻： %{ab.%{_ab}%::cd}%"
-    set slot {_sn} of {_p}'s current inventory to {ab.%{_ab}%.sign} named {_name} with lore "%{ab.%{_ab}%::perm}%||%{_cast}%||%{_ef}%||%{_cd}%"
+        set {_name} to "&7［基礎］ %{-ab.%{_ab}%::name}%"
+    set {_cast} to "&7發動： %{-ab.%{_ab}%::cast}%"
+    set {_cd} to "&7冷卻： %{-ab.%{_ab}%::cd}%"
+    set slot {_sn} of {_p}'s current inventory to {-ab.%{_ab}%.sign} named {_name} with lore "%{-ab.%{_ab}%::perm}%||%{_cast}%||%{_ef}%||%{_cd}%"
 
 function setAbList(lname: text, p: player):
-    if {abList::*} is not set:
-        message "抱歉，能力尚未準備好，請聯絡管理員" to {_p}
-        stop
     open "CHEST" with 2 rows named {_lname} to {_p}
     invalidSlots((1, 3, 5, 7, 9, 11, 13, 15 and 17), {_p})
     set {_i} to 0
-    loop {abList::*}:
+    loop {-abList::*}:
         setAbility({_p}, {_i}, loop-value, false)
         add 2 to {_i}
 
 function viewOwnAb(lname: text, p: player, basic: boolean):
     if {_basic} is true:
-        loop {abBasicList::*}:
+        loop {-abBasicList::*}:
             add loop-value to {_pabOwn::*}
-        set {_bl} to amount of {abBasicList::*}
+        set {_bl} to amount of {-abBasicList::*}
     else:
         set {_bl} to 0
-    loop {abList::*}:
+    loop {-abList::*}:
         if {_p} has permission "ability.%loop-value%":
             add loop-value to {_pabOwn::*}
     set {_row} to 1
@@ -49,85 +46,94 @@ function viewOwnAb(lname: text, p: player, basic: boolean):
         invalidSlot({_i}, {_p})
         add 1 to {_i}
 
-command abUpdate:
-    permission: admin
-    trigger:
-        set {abBasicList::*} to "MysteriousBless" and "ShieldAssault.Basic"
-        set {abList::*} to "Explosion", "FishSensei", "Charoi", "WillBeThere", "ShieldAssault.Enhanced", "LuminositeEternelle", "ChickenAttack", "Hakka" and "Blackmore"
+on load:
+    clear {-abBasicList::*}
+    clear {-abList::*}
 #===基礎===
-        set {ab.MysteriousBless::name} to "&3神祕的加護"
-        set {ab.MysteriousBless::perm} to "MysteriousBless"
-        set {ab.MysteriousBless.sign} to end portal frame
-        set {ab.MysteriousBless::cast} to "死亡時"
-        set {ab.MysteriousBless.effects::*} to "自身工具欄內第一格與第二格", "的物品不會掉落" and "（可避免消失詛咒）", "可透過升級使加護格數增加"
-        set {ab.MysteriousBless::cd} to "無"
+    set {-ab.MysteriousBless::name} to "&3神祕的加護"
+    set {-ab.MysteriousBless::perm} to "MysteriousBless"
+    set {-ab.MysteriousBless.sign} to end portal frame
+    set {-ab.MysteriousBless::cast} to "死亡時"
+    set {-ab.MysteriousBless.effects::*} to "自身工具欄內第一格與第二格", "的物品不會掉落" and "（可避免消失詛咒）", "可透過升級使加護格數增加"
+    set {-ab.MysteriousBless::cd} to "無"
+    add {-ab.MysteriousBless::perm} to {-abBasicList::*}
 #=== ===
-        set {ab.ShieldAssault.Basic::name} to "&3盾牌衝鋒"
-        set {ab.ShieldAssault.Basic::perm} to "ShieldAssault.Basic"
-        set {ab.ShieldAssault.Basic.sign} to shield
-        set {ab.ShieldAssault.Basic::cast} to "於衝刺時拿著&3盾牌&7攻擊生物"
-        set {ab.ShieldAssault.Basic.effects::*} to "將遭攻擊生物撞飛衝刺的位移，", "並根據位移增加額外傷害", "（衝刺2格 = 一顆心" and "最多額外增加2顆心）"
-        set {ab.ShieldAssault.Basic::cd} to "無"
+    set {-ab.ShieldAssault.Basic::name} to "&3盾牌衝鋒"
+    set {-ab.ShieldAssault.Basic::perm} to "ShieldAssault.Basic"
+    set {-ab.ShieldAssault.Basic.sign} to shield
+    set {-ab.ShieldAssault.Basic::cast} to "於衝刺時拿著&3盾牌&7攻擊生物"
+    set {-ab.ShieldAssault.Basic.effects::*} to "將遭攻擊生物撞飛衝刺的位移，", "並根據位移增加額外傷害", "（衝刺2格 = 一顆心" and "最多額外增加2顆心）"
+    set {-ab.ShieldAssault.Basic::cd} to "無"
+    add {-ab.ShieldAssault.Basic::perm} to {-abBasicList::*}
 #===能力===
-        set {ab.Explosion::name} to "&c爆裂魔法！"
-        set {ab.Explosion::perm} to "Explosion"
-        set {ab.Explosion.sign} to tnt
-        set {ab.Explosion::cast} to "在訊息框輸入 &cExplosion!&r"
-        set {ab.Explosion.effects::*} to "以自身為中心製造出一個" and "威力10的爆炸，自身免疫該傷害"
-        set {ab.Explosion::cd} to "10分鐘"
+    set {-ab.Explosion::name} to "&c爆裂魔法！"
+    set {-ab.Explosion::perm} to "Explosion"
+    set {-ab.Explosion.sign} to tnt
+    set {-ab.Explosion::cast} to "在訊息框輸入 &cExplosion!&r"
+    set {-ab.Explosion.effects::*} to "以自身為中心製造出一個" and "威力10的爆炸，自身免疫該傷害"
+    set {-ab.Explosion::cd} to "10分鐘"
+    add {-ab.Explosion::perm} to {-abList::*}
 #=== ===
-        set {ab.FishSensei::name} to "&9魚老師"
-        set {ab.FishSensei::perm} to "FishSensei"
-        set {ab.FishSensei.sign} to raw fish
-        set {ab.FishSensei::cast} to "手上拿著普通的&9魚"
-        set {ab.FishSensei.effects::*} to "飢餓度數值不會改變" and "（不會增加也不會減少）"
-        set {ab.FishSensei::cd} to "無"
+    set {-ab.FishSensei::name} to "&9魚老師"
+    set {-ab.FishSensei::perm} to "FishSensei"
+    set {-ab.FishSensei.sign} to raw fish
+    set {-ab.FishSensei::cast} to "手上拿著普通的&9魚"
+    set {-ab.FishSensei.effects::*} to "飢餓度數值不會改變" and "（不會增加也不會減少）"
+    set {-ab.FishSensei::cd} to "無"
+    add {-ab.FishSensei::perm} to {-abList::*}
 #=== ===
-        set {ab.Charoi::name} to "&9查洛伊藥劑"
-        set {ab.Charoi::perm} to "Charoi"
-        set {ab.Charoi.sign} to potion of night vision
-        set {ab.Charoi::cast} to "自另一手切換任意一瓶&9水瓶&7至主手"
-        set {ab.Charoi.effects::*} to "立即回復3格飽食並獲得", "&6回復II 速度III 抗性II &7與 &6夜視" and "狀態12.5秒，此期間無法攻擊"
-        set {ab.Charoi::cd} to "6分鐘"
+    set {-ab.Charoi::name} to "&9查洛伊藥劑"
+    set {-ab.Charoi::perm} to "Charoi"
+    set {-ab.Charoi.sign} to potion of night vision
+    set {-ab.Charoi::cast} to "自另一手切換任意一瓶&9水瓶&7至主手"
+    set {-ab.Charoi.effects::*} to "立即回復3格飽食並獲得", "&6回復II 速度III 抗性II &7與 &6夜視" and "狀態12.5秒，此期間無法攻擊"
+    set {-ab.Charoi::cd} to "6分鐘"
+    add {-ab.Charoi::perm} to {-abList::*}
 #=== ===
-        set {ab.WillBeThere::name} to "&a一定到！"
-        set {ab.WillBeThere::perm} to "WillBeThere"
-        set {ab.WillBeThere.sign} to eye of ender
-        set {ab.WillBeThere::cast} to "於蹲下時丟出一顆&a終界之眼&r"
-        set {ab.WillBeThere.effects::*} to "隨機傳送到一名其他線上玩家旁邊" and "沒有時即發動失敗，不計使用"
-        set {ab.WillBeThere::cd} to "5分鐘"
+    set {-ab.WillBeThere::name} to "&a一定到！"
+    set {-ab.WillBeThere::perm} to "WillBeThere"
+    set {-ab.WillBeThere.sign} to eye of ender
+    set {-ab.WillBeThere::cast} to "於蹲下時丟出一顆&a終界之眼&r"
+    set {-ab.WillBeThere.effects::*} to "隨機傳送到一名其他線上玩家旁邊" and "沒有時即發動失敗，不計使用"
+    set {-ab.WillBeThere::cd} to "5分鐘"
+    add {-ab.WillBeThere::perm} to {-abList::*}
 #=== ===
-        set {ab.ShieldAssault.Enhanced::name} to "&3盾牌衝鋒&7［&5加強&7］&r"
-        set {ab.ShieldAssault.Enhanced::perm} to "ShieldAssault.Enhanced"
-        set {ab.ShieldAssault.Enhanced.sign} to shield
-        set {ab.ShieldAssault.Enhanced::cast} to "於衝刺時拿著&3盾牌&7攻擊生物"
-        set {ab.ShieldAssault.Enhanced.effects::*} to "將攻擊者面前周圍3格之", "所有生物撞飛所衝刺的位移，", "並根據位移增加額外傷害", "（衝刺1.5格 = 一顆心" and "最多額外增加4.5顆心）"
-        set {ab.ShieldAssault.Enhanced::cd} to "無"
+    set {-ab.ShieldAssault.Enhanced::name} to "&3盾牌衝鋒&7［&5加強&7］&r"
+    set {-ab.ShieldAssault.Enhanced::perm} to "ShieldAssault.Enhanced"
+    set {-ab.ShieldAssault.Enhanced.sign} to shield
+    set {-ab.ShieldAssault.Enhanced::cast} to "於衝刺時拿著&3盾牌&7攻擊生物"
+    set {-ab.ShieldAssault.Enhanced.effects::*} to "將攻擊者面前周圍3格之", "所有生物撞飛所衝刺的位移，", "並根據位移增加額外傷害", "（衝刺1.5格 = 一顆心" and "最多額外增加4.5顆心）"
+    set {-ab.ShieldAssault.Enhanced::cd} to "無"
+    add {-ab.ShieldAssault.Enhanced::perm} to {-abList::*}
 #=== ===
-        set {ab.LuminositeEternelle::name} to "&9吾主在此"
-        set {ab.LuminositeEternelle::perm} to "LuminositeEternelle"
-        set {ab.LuminositeEternelle.sign} to cyan banner item
-        set {ab.LuminositeEternelle::cast} to "在蹲下時放置上&9旗幟&r"
-        set {ab.LuminositeEternelle.effects::*} to "以旗幟為中心點", "範圍10格內的玩家獲得", "&6- 生命值提升 I（已回復） 30秒", "&6- 抗性 I 30秒", "&6- 吸收 II 10秒", "&6- 回復 I 10秒", "發動者額外獲得" and "&9- 緩速 VII 30秒"
-        set {ab.LuminositeEternelle::cd} to "10分鐘"
+    set {-ab.LuminositeEternelle::name} to "&9吾主在此"
+    set {-ab.LuminositeEternelle::perm} to "LuminositeEternelle"
+    set {-ab.LuminositeEternelle.sign} to cyan banner item
+    set {-ab.LuminositeEternelle::cast} to "在蹲下時放置上&9旗幟&r"
+    set {-ab.LuminositeEternelle.effects::*} to "以旗幟為中心點", "範圍10格內的玩家獲得", "&6- 生命值提升 I（已回復） 30秒", "&6- 抗性 I 30秒", "&6- 吸收 II 10秒", "&6- 回復 I 10秒", "發動者額外獲得" and "&9- 緩速 VII 30秒"
+    set {-ab.LuminositeEternelle::cd} to "10分鐘"
+    add {-ab.LuminositeEternelle::perm} to {-abList::*}
 #=== ===
-        set {ab.ChickenAttack::name} to "&6雞雞攻擊！"
-        set {ab.ChickenAttack::perm} to "ChickenAttack"
-        set {ab.ChickenAttack.sign} to egg
-        set {ab.ChickenAttack::cast} to "對生物丟出&6雞蛋&r"
-        set {ab.ChickenAttack.effects::*} to "可以造成 2.5 顆心的傷害"
-        set {ab.ChickenAttack::cd} to "無"
+    set {-ab.ChickenAttack::name} to "&6雞雞攻擊！"
+    set {-ab.ChickenAttack::perm} to "ChickenAttack"
+    set {-ab.ChickenAttack.sign} to egg
+    set {-ab.ChickenAttack::cast} to "對生物丟出&6雞蛋&r"
+    set {-ab.ChickenAttack.effects::*} to "可以造成 2.5 顆心的傷害"
+    set {-ab.ChickenAttack::cd} to "無"
+    add {-ab.ChickenAttack::perm} to {-abList::*}
 #=== ===
-        set {ab.Hakka::name} to "&b客家人"
-        set {ab.Hakka::perm} to "Hakka"
-        set {ab.Hakka.sign} to spawn egg
-        set {ab.Hakka::cast} to "在訊息框輸入 &bHakka!&r"
-        set {ab.Hakka.effects::*} to "隨機變成一種生物3分鐘，" and "僅限外觀，可迷惑怪物"
-        set {ab.Hakka::cd} to "10分鐘"
+    set {-ab.Hakka::name} to "&b客家人"
+    set {-ab.Hakka::perm} to "Hakka"
+    set {-ab.Hakka.sign} to spawn egg
+    set {-ab.Hakka::cast} to "在訊息框輸入 &bHakka!&r"
+    set {-ab.Hakka.effects::*} to "隨機變成一種生物3分鐘，" and "僅限外觀，可迷惑怪物"
+    set {-ab.Hakka::cd} to "10分鐘"
+    add {-ab.Hakka::perm} to {-abList::*}
 #=== ===
-        set {ab.Blackmore::name} to "&b雨男"
-        set {ab.Blackmore::perm} to "Blackmore"
-        set {ab.Blackmore.sign} to lily pad
-        set {ab.Blackmore::cast} to "天氣轉換為下雨或雷雨時"
-        set {ab.Blackmore.effects::*} to "獲得飛行能力" and "於天晴時即消失"
-        set {ab.Blackmore::cd} to "無"
+    set {-ab.Blackmore::name} to "&b雨男"
+    set {-ab.Blackmore::perm} to "Blackmore"
+    set {-ab.Blackmore.sign} to lily pad
+    set {-ab.Blackmore::cast} to "天氣轉換為下雨或雷雨時"
+    set {-ab.Blackmore.effects::*} to "獲得飛行能力" and "於天晴時即消失"
+    set {-ab.Blackmore::cd} to "無"
+    add {-ab.Blackmore::perm} to {-abList::*}
