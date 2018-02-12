@@ -197,6 +197,6 @@ on inventory click:
         set {_asn::legs} to 37
         set {_asn::feet} to 36
         set {bless.armor.%player%::%{_asn::%line 1 of lore of item%}%} to true
-        set {_rq} to 20 + {-bless.leveladd.%{_p}%}
+        set {_rq} to 20 + {-bless.leveladd.%player%}
         reduce player's level by {_rq}
         message "成功升級 %name of item%！" to player
