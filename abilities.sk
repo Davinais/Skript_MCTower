@@ -92,6 +92,14 @@ on hunger level change:
     else if player is holding fish in off hand:
         cancel the event
 
+on damage:
+    attacker has permission "ability.FishSensei"
+    if attacker is not holding pufferfish in main hand:
+        if attacker is not holding pufferfish in off hand:
+            stop
+    apply poison 2 to victim for 10 seconds
+    apply nausea to victim for 10 seconds
+
 #===查洛伊藥劑===
 on offhand switch:
     player has permission "ability.Charoi"
