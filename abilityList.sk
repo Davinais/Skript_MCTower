@@ -93,7 +93,7 @@ on load:
     set {-ab.WillBeThere::name} to "&a一定到！"
     set {-ab.WillBeThere::perm} to "WillBeThere"
     set {-ab.WillBeThere.sign} to eye of ender
-    set {-ab.WillBeThere::cast} to "於蹲下時丟出一顆&a終界之眼&r"
+    set {-ab.WillBeThere::cast} to "自另一手切換&a終界之眼&7至主手"
     set {-ab.WillBeThere.effects::*} to "隨機傳送到一名其他線上玩家旁邊" and "沒有時即發動失敗，不計使用"
     set {-ab.WillBeThere::cd} to "5分鐘"
     add {-ab.WillBeThere::perm} to {-abList::*}
