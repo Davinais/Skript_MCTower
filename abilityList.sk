@@ -74,11 +74,11 @@ on load:
     set {-ab.Explosion::cd} to "10分鐘"
     add {-ab.Explosion::perm} to {-abList::*}
 #=== ===
-    set {-ab.FishSensei::name} to "&9魚老師"
+    set {-ab.FishSensei::name} to "&3魚老師"
     set {-ab.FishSensei::perm} to "FishSensei"
     set {-ab.FishSensei.sign} to raw fish
-    set {-ab.FishSensei::cast} to "手上拿著&9魚"
-    set {-ab.FishSensei.effects::*} to "&9普通魚：", "- 飢餓度數值不會改變", "- （不會增加也不會減少）", "&9河豚：" and "- 攻擊時造成中毒II 與 噁心 10秒"
+    set {-ab.FishSensei::cast} to "拿著不同種類的&3魚"
+    set {-ab.FishSensei.effects::*} to "&3普通魚：", "- 飢餓度數值不會改變", "- （不會增加也不會減少）", "&3鮭魚：", "- 攻擊時使被攻擊者往上飛8格", "&3河豚：", "- 攻擊時造成中毒I 5秒與噁心 10秒", "&3小丑魚：" and "- 攻擊時造成發光 30秒"
     set {-ab.FishSensei::cd} to "無"
     add {-ab.FishSensei::perm} to {-abList::*}
 #=== ===

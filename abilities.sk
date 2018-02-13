@@ -97,8 +97,23 @@ on damage:
     if attacker is not holding pufferfish in main hand:
         if attacker is not holding pufferfish in off hand:
             stop
-    apply poison 2 to victim for 10 seconds
+    apply poison to victim for 5 seconds
     apply nausea to victim for 10 seconds
+
+on damage:
+    attacker has permission "ability.FishSensei"
+    if attacker is not holding salmon in main hand:
+        if attacker is not holding salmon in off hand:
+            stop
+    cancel the event
+    push victim vector 0, 1.2, 0 #8格
+
+on damage:
+    attacker has permission "ability.FishSensei"
+    if attacker is not holding clownfish in main hand:
+        if attacker is not holding clownfish in off hand:
+            stop
+    apply glowing to victim for 30 seconds
 
 #===查洛伊藥劑===
 on offhand switch:
