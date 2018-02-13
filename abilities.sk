@@ -127,10 +127,9 @@ on damage:
         cancel the event
 
 #===一定到===
-on rightclick with eye of ender:
+on offhand switch:
     player has permission "ability.WillBeThere"
-    player is sneaking
-    cancel the event
+    event-item is eye of ender
     set {_timepass} to difference between {willbethere.casted.%player%} and now
     if {_timepass} is less than 5 minutes:
         message "傳送能量還需要 %difference between 5 minutes and {_timepass}% 才能使用" to player
