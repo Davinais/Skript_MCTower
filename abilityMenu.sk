@@ -142,6 +142,9 @@ on inventory click:
     if name of player's current inventory is "&0學習能力":
         cancel the event
         if name of item contains "&7［能力］":
+            if player has permission "ability.%line 1 of lore of item%":
+                abNPCsay("孩子， 你已經擁有這個能力啦， 再選一個吧", player)
+                stop
             execute console command "/pex user %player% add ability.%line 1 of lore of item%"
             add 1 to {ability.learned.%player%}
             message "成功學習 %name of item%" to player
