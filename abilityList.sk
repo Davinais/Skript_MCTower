@@ -117,7 +117,7 @@ on load:
     set {-ab.ChickenAttack::perm} to "ChickenAttack"
     set {-ab.ChickenAttack.sign} to egg
     set {-ab.ChickenAttack::cast} to "對生物丟出&6雞蛋&r"
-    set {-ab.ChickenAttack.effects::*} to "可以造成 2.5 顆心的傷害"
+    set {-ab.ChickenAttack.effects::*} to "可以造成 4 顆心的傷害"
     set {-ab.ChickenAttack::cd} to "無"
     add {-ab.ChickenAttack::perm} to {-abList::*}
 #=== ===

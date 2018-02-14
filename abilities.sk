@@ -245,7 +245,7 @@ on damage:
     if damage was caused by projectile:
         projectile is egg
         message "&6Chicken Attack!&r" to attacker
-        add 2.5 to damage
+        add 4 to damage
 
 #===雨男===
 on join:
