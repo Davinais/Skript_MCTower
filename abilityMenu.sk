@@ -32,10 +32,10 @@ function abLearn(p: player):
         abNPCsay("很可惜，已經到最大值囉", {_p})
         stop
     abNPCsay("啊啊！可以學新能力啦？", {_p})
-    wait 0.5 second
+    wait 1 second
     abNPCsay("看來你很努力呢，相信你一定過得很充實！", {_p})
     wait 0.5 second
-    setAbList("&0學習能力", {_p})
+    setAbList("&0學習能力", {_p}, true)
 
 function abChange(p: player):
     abNPCsay("想更換能力？", {_p})
@@ -142,9 +142,6 @@ on inventory click:
     if name of player's current inventory is "&0學習能力":
         cancel the event
         if name of item contains "&7［能力］":
-            if player has permission "ability.%line 1 of lore of item%":
-                abNPCsay("孩子， 你已經擁有這個能力啦， 再選一個吧", player)
-                stop
             execute console command "/pex user %player% add ability.%line 1 of lore of item%"
             add 1 to {ability.learned.%player%}
             message "成功學習 %name of item%" to player
@@ -175,7 +172,7 @@ on inventory click:
             execute console command "/pex user %player% remove ability.%line 1 of lore of item%"
             reduce {ability.learned.%player%} by 1
             message "成功移除 %name of item%" to player
-            setAbList("&0更換能力", player)
+            setAbList("&0更換能力", player, true)
     else if name of player's current inventory is "&0更換能力":
         cancel the event
         if name of item contains "&7［能力］":
