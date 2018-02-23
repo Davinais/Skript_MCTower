@@ -288,6 +288,16 @@ on weather change:
             if loop-value's gamemode is survival or adventure:
                 set loop-value's fly mode to false
 
+#===原住民===
+on death:
+    attacker is a player
+    victim is not a player
+    attacker has permission "ability.NativeHunter"
+    chance of 25%:
+        message "戰利品的獲取是靠運氣與…&5本能&r" to attacker
+        set {_dp::*} to drops
+        drop {_dp::*} at victim
+
 #===一撮火藥===
 on drop of blaze rod:
     player has permission "ability.LittleFlour"
