@@ -25,6 +25,7 @@ on load:
     add glow fire charge named "{@jammed} &6閃瞎我狗眼" with lore "&f大賽專用妨礙道具||&f給予其他參賽者30秒失明+夜視效果||&f大賽後收回" to {-speItem::*}
     add glow feather named "{@jammed} &b飛行荷蘭人" with lore "&f大賽專用妨礙道具||&f使其他參賽者往上飛32格||&f但不受墜落傷害||&f大賽後收回" to {-speItem::*}
     add glow paper named "{@jammed} &a均分卡" with lore "&f大賽專用妨礙道具||&f與除去你之外的第一名均分分數||&f大賽後收回" to {-speItem::*}
+    add glow zombie head named "{@jammed} &2殭殭殭殭" with lore "&f大賽專用妨礙道具||&f在其他玩家旁邊生成一隻殭屍||&f大賽後收回" to {-speItem::*} 
     add {-speRod} to {-speItem::*}
     
 function changeFishScore(ch: number, p: player):
@@ -228,6 +229,15 @@ on right click with paper:
     setFishScore({_average}, player)
     setFishScore({_average}, {_win})
     message "［%player%］ 均值是統計中的一個重要概念" to {fisher::*}
+
+on right click with zombie head:
+    name of item is "{@jammed} &2殭殭殭殭"
+    cancel the event
+    remove 1 of item from player
+    loop {fisher::*}:
+        if loop-value is not player:
+            spawn 1 zombie at loop-value
+    message "［%player%］ 你知道什麼是殭殭殭殭嗎？" to {fisher::*}
 
 on damage of a player:
     damage was caused by fall
