@@ -293,7 +293,7 @@ on death:
     attacker is a player
     victim is not a player
     attacker has permission "ability.NativeHunter"
-    chance of 25%:
+    chance of 18%:
         message "戰利品的獲取是靠運氣與…&5本能&r" to attacker
         set {_dp::*} to drops
         drop {_dp::*} at victim

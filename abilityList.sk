@@ -147,7 +147,7 @@ on load:
     set {-ab.NativeHunter::perm} to "NativeHunter"
     set {-ab.NativeHunter.sign} to leather
     set {-ab.NativeHunter::cast} to "非玩家生物死亡時"
-    set {-ab.NativeHunter.effects::*} to "以 25％ 的機率", "獲取雙倍的掉落物" and "（可與掠奪附魔疊加）"
+    set {-ab.NativeHunter.effects::*} to "以 18％ 的機率", "獲取雙倍的掉落物" and "（可與掠奪附魔疊加）"
     set {-ab.NativeHunter::cd} to "無"
     add {-ab.NativeHunter::perm} to {-abList::*}
 #=== ===
