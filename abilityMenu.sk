@@ -94,7 +94,7 @@ function blessLevelUp(p: player):
     if {_p}'s level < {_require}:
         abNPCsay("抱歉，你的等級不夠喔！", {_p})
         stop
-    if {bless.level.%{_p}%} >= 8:
+    if {bless.level.%{_p}%} >= 9:
         abNPCsay("加護已經升級滿啦， 加油吧！", {_p})
         stop
     reduce {_p}'s level by {_require}
