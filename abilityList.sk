@@ -51,118 +51,112 @@ function viewOwnAb(lname: text, p: player, basic: boolean):
         invalidSlot({_i}, {_p})
         add 1 to {_i}
 
+function abInit(name: text, perm: text, sign: item):
+    set {-nowSetAb} to {_perm}
+    set {-ab.%{-nowSetAb}%::name} to {_name}
+    set {-ab.%{-nowSetAb}%::perm} to {_perm}
+    set {-ab.%{-nowSetAb}%.sign} to {_sign}
+
+function setCast(c: text):
+    set {-ab.%{-nowSetAb}%::cast} to {_c}
+
+function setEffects(e: texts):
+    set {-ab.%{-nowSetAb}%.effects::*} to {_e::*}
+
+function setCd(c: text):
+    set {-ab.%{-nowSetAb}%::cd} to {_c}
+
+function regAb(basic: boolean = false):
+    if {_basic} is true:
+        add {-ab.%{-nowSetAb}%::perm} to {-abBasicList::*}
+    else:
+        add {-ab.%{-nowSetAb}%::perm} to {-abList::*}
+    clear {-nowSetAb}
+
 on load:
     clear {-abBasicList::*}
     clear {-abList::*}
 #===基礎===
-    set {-ab.MysteriousBless::name} to "&3神祕的加護"
-    set {-ab.MysteriousBless::perm} to "MysteriousBless"
-    set {-ab.MysteriousBless.sign} to end portal frame
-    set {-ab.MysteriousBless::cast} to "死亡時"
-    set {-ab.MysteriousBless.effects::*} to "自身工具欄內第一格與第二格", "的物品不會掉落" and "（可避免消失詛咒）", "可透過升級使加護格數增加"
-    set {-ab.MysteriousBless::cd} to "無"
-    add {-ab.MysteriousBless::perm} to {-abBasicList::*}
+    abInit("&3神祕的加護", "MysteriousBless", end portal frame)
+    setCast("死亡時")
+    setEffects(("自身工具欄內第一格與第二格", "的物品不會掉落" and "（可避免消失詛咒）", "可透過升級使加護格數增加"))
+    setCd("無")
+    regAb(true)
 #=== ===
-    set {-ab.ShieldAssault.Basic::name} to "&3盾牌衝鋒"
-    set {-ab.ShieldAssault.Basic::perm} to "ShieldAssault.Basic"
-    set {-ab.ShieldAssault.Basic.sign} to shield
-    set {-ab.ShieldAssault.Basic::cast} to "於衝刺時拿著&3盾牌&7攻擊生物"
-    set {-ab.ShieldAssault.Basic.effects::*} to "將遭攻擊生物撞飛衝刺的位移，", "並根據位移增加額外傷害", "（衝刺2格 = 一顆心" and "最多額外增加2顆心）"
-    set {-ab.ShieldAssault.Basic::cd} to "無"
-    add {-ab.ShieldAssault.Basic::perm} to {-abBasicList::*}
+    abInit("&3盾牌衝鋒", "ShieldAssault.Basic", shield)
+    setCast("於衝刺時拿著&3盾牌&7攻擊生物")
+    setEffects(("將遭攻擊生物撞飛衝刺的位移，", "並根據位移增加額外傷害", "（衝刺2格 = 一顆心" and "最多額外增加2顆心）"))
+    setCd("無")
+    regAb(true)
 #===能力===
-    set {-ab.Explosion::name} to "&c爆裂魔法！"
-    set {-ab.Explosion::perm} to "Explosion"
-    set {-ab.Explosion.sign} to tnt
-    set {-ab.Explosion::cast} to "在訊息框輸入 &cExplosion!&r"
-    set {-ab.Explosion.effects::*} to "以自身為中心製造出一個" and "威力10的爆炸，自身免疫該傷害"
-    set {-ab.Explosion::cd} to "10分鐘"
-    add {-ab.Explosion::perm} to {-abList::*}
+    abInit("&c爆裂魔法！", "Explosion", tnt)
+    setCast("在訊息框輸入 &cExplosion!&r")
+    setEffects(("以自身為中心製造出一個" and "威力10的爆炸，自身免疫該傷害"))
+    setCd("10分鐘")
+    regAb()
 #=== ===
-    set {-ab.FishSensei::name} to "&3魚老師"
-    set {-ab.FishSensei::perm} to "FishSensei"
-    set {-ab.FishSensei.sign} to raw fish
-    set {-ab.FishSensei::cast} to "拿著不同種類的&3魚"
-    set {-ab.FishSensei.effects::*} to "&3普通魚：", "- 飢餓度數值不會改變", "- （不會增加也不會減少）", "&3鮭魚：", "- 攻擊時使被攻擊者往上飛8格", "&3河豚：", "- 攻擊時造成中毒I 5秒與噁心 10秒", "&3小丑魚：" and "- 攻擊時造成發光 30秒"
-    set {-ab.FishSensei::cd} to "無"
-    add {-ab.FishSensei::perm} to {-abList::*}
+    abInit("&3魚老師", "FishSensei", raw fish)
+    setCast("拿著不同種類的&3魚")
+    setEffects(("&3普通魚：", "- 飢餓度數值不會改變", "- （不會增加也不會減少）", "&3鮭魚：", "- 攻擊時使被攻擊者往上飛8格", "&3河豚：", "- 攻擊時造成中毒I 5秒與噁心 10秒", "&3小丑魚：" and "- 攻擊時造成發光 30秒"))
+    setCd("無")
+    regAb()
 #=== ===
-    set {-ab.Charoi::name} to "&9查洛伊藥劑"
-    set {-ab.Charoi::perm} to "Charoi"
-    set {-ab.Charoi.sign} to potion of night vision
-    set {-ab.Charoi::cast} to "自另一手切換任意一瓶&9水瓶&7至主手"
-    set {-ab.Charoi.effects::*} to "立即回復3格飽食並獲得", "&6回復II 速度III 抗性II &7與 &6夜視" and "狀態12.5秒，此期間無法攻擊"
-    set {-ab.Charoi::cd} to "6分鐘"
-    add {-ab.Charoi::perm} to {-abList::*}
+    abInit("&9查洛伊藥劑", "Charoi", potion of night vision)
+    setCast("自另一手切換任意一瓶&9水瓶&7至主手")
+    setEffects(("立即回復3格飽食並獲得", "&6回復II 速度III 抗性II &7與 &6夜視" and "狀態12.5秒，此期間無法攻擊"))
+    setCd("6分鐘")
+    regAb()
 #=== ===
-    set {-ab.WillBeThere::name} to "&a一定到！"
-    set {-ab.WillBeThere::perm} to "WillBeThere"
-    set {-ab.WillBeThere.sign} to eye of ender
-    set {-ab.WillBeThere::cast} to "自另一手切換&a終界之眼&7至主手"
-    set {-ab.WillBeThere.effects::*} to "隨機傳送到一名其他線上玩家旁邊" and "沒有時即發動失敗，不計使用"
-    set {-ab.WillBeThere::cd} to "5分鐘"
-    add {-ab.WillBeThere::perm} to {-abList::*}
+    abInit("&a一定到！", "WillBeThere", eye of ender)
+    setCast("自另一手切換&a終界之眼&7至主手")
+    setEffects(("隨機傳送到一名其他線上玩家旁邊" and "沒有時即發動失敗，不計使用"))
+    setCd("5分鐘")
+    regAb()
 #=== ===
-    set {-ab.ShieldAssault.Enhanced::name} to "&3盾牌衝鋒&7［&5加強&7］&r"
-    set {-ab.ShieldAssault.Enhanced::perm} to "ShieldAssault.Enhanced"
-    set {-ab.ShieldAssault.Enhanced.sign} to shield
-    set {-ab.ShieldAssault.Enhanced::cast} to "於衝刺時拿著&3盾牌&7攻擊生物"
-    set {-ab.ShieldAssault.Enhanced.effects::*} to "將攻擊者面前周圍3格之", "所有生物撞飛所衝刺的位移，", "並根據位移增加額外傷害", "（衝刺1.5格 = 一顆心" and "最多額外增加4.5顆心）"
-    set {-ab.ShieldAssault.Enhanced::cd} to "無"
-    add {-ab.ShieldAssault.Enhanced::perm} to {-abList::*}
+    abInit("&3盾牌衝鋒&7［&5加強&7］&r", "ShieldAssault.Enhanced", shield)
+    setCast("於衝刺時拿著&3盾牌&7攻擊生物")
+    setEffects(("將攻擊者面前周圍3格之", "所有生物撞飛所衝刺的位移，", "並根據位移增加額外傷害", "（衝刺1.5格 = 一顆心" and "最多額外增加4.5顆心）"))
+    setCd("無")
+    regAb()
 #=== ===
-    set {-ab.LuminositeEternelle::name} to "&9吾主在此"
-    set {-ab.LuminositeEternelle::perm} to "LuminositeEternelle"
-    set {-ab.LuminositeEternelle.sign} to cyan banner item
-    set {-ab.LuminositeEternelle::cast} to "在蹲下時放置上&9旗幟&r"
-    set {-ab.LuminositeEternelle.effects::*} to "以旗幟為中心點", "範圍10格內的玩家獲得", "&6- 生命值提升 I（已回復） 30秒", "&6- 抗性 I 30秒", "&6- 吸收 II 10秒", "&6- 回復 I 10秒", "發動者額外獲得" and "&9- 緩速 VII 30秒"
-    set {-ab.LuminositeEternelle::cd} to "10分鐘"
-    add {-ab.LuminositeEternelle::perm} to {-abList::*}
+    abInit("&9吾主在此", "LuminositeEternelle", cyan banner item)
+    setCast("在蹲下時放置上&9旗幟&r")
+    setEffects(("以旗幟為中心點", "範圍10格內的玩家獲得", "&6- 生命值提升 I（已回復） 30秒", "&6- 抗性 I 30秒", "&6- 吸收 II 10秒", "&6- 回復 I 10秒", "發動者額外獲得" and "&9- 緩速 VII 30秒"))
+    setCd("10分鐘")
+    regAb()
 #=== ===
-    set {-ab.ChickenAttack::name} to "&6雞雞攻擊！"
-    set {-ab.ChickenAttack::perm} to "ChickenAttack"
-    set {-ab.ChickenAttack.sign} to egg
-    set {-ab.ChickenAttack::cast} to "對生物丟出&6雞蛋&r"
-    set {-ab.ChickenAttack.effects::*} to "可以造成 4 顆心的傷害"
-    set {-ab.ChickenAttack::cd} to "無"
-    add {-ab.ChickenAttack::perm} to {-abList::*}
+    abInit("&6雞雞攻擊！", "ChickenAttack", egg)
+    setCast("對生物丟出&6雞蛋&r")
+    setEffects(("可以造成 4 顆心的傷害"))
+    setCd("無")
+    regAb()
 #=== ===
-    set {-ab.Hakka::name} to "&b客家人"
-    set {-ab.Hakka::perm} to "Hakka"
-    set {-ab.Hakka.sign} to spawn egg
-    set {-ab.Hakka::cast} to "在訊息框輸入 &bHakka!&r"
-    set {-ab.Hakka.effects::*} to "隨機變成一種生物3分鐘，" and "僅限外觀，可迷惑怪物"
-    set {-ab.Hakka::cd} to "10分鐘"
-    add {-ab.Hakka::perm} to {-abList::*}
+    abInit("&b客家人", "Hakka", spawn egg)
+    setCast("在訊息框輸入 &bHakka!&r")
+    setEffects(("隨機變成一種生物3分鐘，" and "僅限外觀，可迷惑怪物"))
+    setCd("10分鐘")
+    regAb()
 #=== ===
-    set {-ab.Blackmore::name} to "&b雨男"
-    set {-ab.Blackmore::perm} to "Blackmore"
-    set {-ab.Blackmore.sign} to lily pad
-    set {-ab.Blackmore::cast} to "天氣轉換為下雨或雷雨時"
-    set {-ab.Blackmore.effects::*} to "獲得飛行能力" and "於天晴時即消失"
-    set {-ab.Blackmore::cd} to "無"
-    add {-ab.Blackmore::perm} to {-abList::*}
+    abInit("&b雨男", "Blackmore", lily pad)
+    setCast("天氣轉換為下雨或雷雨時")
+    setEffects(("獲得飛行能力" and "於天晴時即消失"))
+    setCd("無")
+    regAb()
 #=== ===
-    set {-ab.NativeHunter::name} to "&5原住民"
-    set {-ab.NativeHunter::perm} to "NativeHunter"
-    set {-ab.NativeHunter.sign} to leather
-    set {-ab.NativeHunter::cast} to "非玩家生物死亡時"
-    set {-ab.NativeHunter.effects::*} to "以 18％ 的機率", "獲取雙倍的掉落物" and "（可與掠奪附魔疊加）"
-    set {-ab.NativeHunter::cd} to "無"
-    add {-ab.NativeHunter::perm} to {-abList::*}
+    abInit("&5原住民", "NativeHunter", leather)
+    setCast("非玩家生物死亡時")
+    setEffects(("以 18％ 的機率", "獲取雙倍的掉落物" and "（可與掠奪附魔疊加）"))
+    setCd("無")
+    regAb()
 #=== ===
-    set {-ab.LittleFlour::name} to "&6一撮火藥"
-    set {-ab.LittleFlour::perm} to "LittleFlour"
-    set {-ab.LittleFlour.sign} to gunpowder
-    set {-ab.LittleFlour::cast} to "持有&c火藥&7時丟棄&6烈焰桿&7"
-    set {-ab.LittleFlour.effects::*} to "從身上扣除1個火藥", "並以速度2射出一個地獄幽靈火球" and "（成功時烈焰桿不會被丟棄）"
-    set {-ab.LittleFlour::cd} to "無"
-    add {-ab.LittleFlour::perm} to {-abList::*}
+    abInit("&6一撮火藥", "LittleFlour", gunpowder)
+    setCast("持有&c火藥&7時丟棄&6烈焰桿&7")
+    setEffects(("從身上扣除1個火藥", "並以速度2射出一個地獄幽靈火球" and "（成功時烈焰桿不會被丟棄）"))
+    setCd("無")
+    regAb()
 #=== ===
-    set {-ab.ATKTrade::name} to "&e攻擊轉換"
-    set {-ab.ATKTrade::perm} to "ATKTrade"
-    set {-ab.ATKTrade.sign} to golden sword
-    set {-ab.ATKTrade::cast} to "常駐"
-    set {-ab.ATKTrade.effects::*} to "所有造成的傷害 +25％", "所有受到的傷害 +40％" and "（傷害計算為無條件捨去）"
-    set {-ab.ATKTrade::cd} to "無"
-    add {-ab.ATKTrade::perm} to {-abList::*}
+    abInit("&e攻擊轉換", "ATKTrade", golden sword)
+    setCast("常駐")
+    setEffects(("所有造成的傷害 +25％", "所有受到的傷害 +40％" and "（傷害計算為無條件捨去）"))
+    setCd("無")
+    regAb()
