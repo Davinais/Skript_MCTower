@@ -306,6 +306,13 @@ on drop of blaze rod:
     cancel the event
     shoot a fire ball from player at speed 2
 
+#===攻擊轉換===
+on damage:
+    if attacker has permission "ability.ATKTrade":
+        set damage to 1.25 * damage
+    if victim has permission "ability.ATKTrade":
+        set damage to 1.4 * damage
+
 #=== ===
 on rightclick on entity:
     player has permission "ability.Riding"

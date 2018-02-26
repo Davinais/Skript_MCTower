@@ -158,3 +158,11 @@ on load:
     set {-ab.LittleFlour.effects::*} to "從身上扣除1個火藥", "並以速度2射出一個地獄幽靈火球" and "（成功時烈焰桿不會被丟棄）"
     set {-ab.LittleFlour::cd} to "無"
     add {-ab.LittleFlour::perm} to {-abList::*}
+#=== ===
+    set {-ab.ATKTrade::name} to "&e攻擊轉換"
+    set {-ab.ATKTrade::perm} to "ATKTrade"
+    set {-ab.ATKTrade.sign} to golden sword
+    set {-ab.ATKTrade::cast} to "常駐"
+    set {-ab.ATKTrade.effects::*} to "所有造成的傷害 +25％", "所有受到的傷害 +40％" and "（傷害計算為無條件捨去）"
+    set {-ab.ATKTrade::cd} to "無"
+    add {-ab.ATKTrade::perm} to {-abList::*}
