@@ -32,18 +32,18 @@ on death of player:
             set {_asn} to loop-index parsed as number
             set slot {_asn} of victim's inventory to loop-value
 
-#===喵喵能力卷===
+#===喵喵能力券===
 on death:
     attacker is a player
     victim is not player or sheep or pig or chicken or cow or parrot or horse or donkey or mule or ocelot or wolf or llama or snow man
     chance of 1%:
-        set {_abAdd} to name tag named "&9%attacker%&r 的 &6喵喵能力卷&r" with lore "&9%attacker% &7專用的能力卷||&7可以增加一個學習能力的數量||&7右鍵使用， 當然你要當成一般的命名牌||&7喵喵神也不會反對"
+        set {_abAdd} to name tag named "&9%attacker%&r 的 &6喵喵能力券&r" with lore "&9%attacker% &7專用的能力券||&7可以增加一個學習能力的數量||&7右鍵使用， 當然你要當成一般的命名牌||&7喵喵神也不會反對"
         enchant {_abAdd} with curse of vanishing
         drop {_abAdd} at victim
 
 on rightclick with name tag:
     item is enchanted with curse of vanishing
-    name of item contains "&6喵喵能力卷&r"
+    name of item contains "&6喵喵能力券&r"
     if name of item contains "&9%player%&r":
         cancel the event
         remove item from player
@@ -59,10 +59,10 @@ on rightclick with name tag:
 #    if {fish.contest} is true:
 #        chance of 2%:
 #            message "atari %player%" to console
-#            set {_abAdd} to name tag named "&9%player%&r 的 &6喵喵能力卷&r" with lore "&9%player% &7專用的能力卷||&7可以增加一個學習能力的數量||&7右鍵使用， 當然你要當成一般的命名牌||&7喵喵神也不會反對"
+#            set {_abAdd} to name tag named "&9%player%&r 的 &6喵喵能力券&r" with lore "&9%player% &7專用的能力券||&7可以增加一個學習能力的數量||&7右鍵使用， 當然你要當成一般的命名牌||&7喵喵神也不會反對"
 #            enchant {_abAdd} with curse of vanishing
 #            give player {_abAdd}
-#            broadcast "[&b一回限定&r] 恭喜 %player% 釣到 &6喵喵能力卷&r ！"
+#            broadcast "[&b一回限定&r] 恭喜 %player% 釣到 &6喵喵能力券&r ！"
 #            broadcast "本活動結束， 敬請享受搖曳釣魚"
 #            set {fish.contest} to false
 
